@@ -1,10 +1,23 @@
 import React, { useState } from 'react'
 
-const Authors = (props) => {
-  if (!props.show) {
+const Authors = ({ show, result, editBorn }) => {
+  const [author, setAuthor] = useState('')
+  const [born, setBorn] = useState('')
+
+  if (!show || result.loading) {
     return null
   }
-  const authors = []
+
+  const authors = result.data.allAuthors
+
+  const submit = (event) => {
+    event.preventDefault()
+    
+    editBorn({ variables: { author, setBornTo: Number(born) }})
+
+    setAuthor('')
+    setBorn('')
+  }
 
   return (
     <div>
@@ -29,6 +42,25 @@ const Authors = (props) => {
           )}
         </tbody>
       </table>
+      <br/>
+      <form onSubmit={submit}>
+        <div>
+          Set author
+          <input
+              value={author}
+              onChange={({ target }) => setAuthor(target.value)}
+            />
+        </div>
+        <div>
+          born to
+          <input
+              type='number'
+              value={born}
+              onChange={({ target }) => setBorn(target.value)}
+            />
+        </div>
+        <button type='submit'>Submit</button>
+      </form>
 
     </div>
   )
