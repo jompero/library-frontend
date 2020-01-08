@@ -45,11 +45,12 @@ const Authors = ({ show, result, editBorn }) => {
       <br/>
       <form onSubmit={submit}>
         <div>
-          Set author
-          <input
-              value={author}
-              onChange={({ target }) => setAuthor(target.value)}
-            />
+          Select author
+          <select value={author} onChange={({ target }) => setAuthor(target.value)}>
+            {authors.map(author => {
+              return <option key={author.name} value={author.name}>{author.name}</option>
+            })}
+          </select>
         </div>
         <div>
           born to
