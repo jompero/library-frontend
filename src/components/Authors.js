@@ -1,12 +1,16 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 const Authors = ({ show, result, editBorn }) => {
   const [author, setAuthor] = useState('')
   const [born, setBorn] = useState('')
+  
+  useEffect(() => {
+    if (result.loading) return
+    result.data && setAuthor(result.data.allAuthors[0].name)
+  }, [result])
 
-  if (!show || result.loading) {
-    return null
-  }
+  if (!show) return null
+  if (result.loading) return <div>Loading...</div>
 
   const authors = result.data.allAuthors
 

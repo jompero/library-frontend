@@ -1,11 +1,42 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
-const Books = ({ show, result }) => {
-  if (!show || result.loading) {
-    return null
+const Books = ({ show, books, genres, getFilteredBooks, filteredBooks }) => {
+  const [filter, setFilter] = useState(false)
+  const [currentBooks, setBooks] = useState([])
+  console.log('filteredBooks', filteredBooks)
+
+  useEffect(() => {
+    if (!books.loading && !filter) setBooks(books.data.allBooks)
+  }, [books, filter])
+
+  useEffect(() => {
+    if (!filteredBooks.loading && filter) setBooks(filteredBooks.data.allBooks)
+  }, [filteredBooks, filter])
+
+  if (!show) return null
+  if (books.loading) return <div>Loading...</div>
+  filter && filteredBooks.refetch && filteredBooks.refetch()
+
+  console.log('dsplayed books', currentBooks)
+
+  const clickHandler = (genre) => {
+    genre && getFilteredBooks({ variables: { genre } })
+    setFilter(genre ? true : false)
   }
 
-  const books = result.data.allBooks
+  const genreButtons = () => {
+    console.log(genres)
+    if (genres.loading) return null
+    const buttons = genres.data.allGenres.values.map(genre => {
+      return <button key={genre} onClick={() => clickHandler(genre)}>{genre}</button>
+    })
+    return (
+      <div>
+        {buttons}
+        <button onClick={() => clickHandler(null)} >all</button>
+      </div>
+    )
+  }
 
   return (
     <div>
@@ -22,7 +53,7 @@ const Books = ({ show, result }) => {
               published
             </th>
           </tr>
-          {books.map(a =>
+          {currentBooks.map(a =>
             <tr key={a.title}>
               <td>{a.title}</td>
               <td>{a.author.name}</td>
@@ -31,6 +62,9 @@ const Books = ({ show, result }) => {
           )}
         </tbody>
       </table>
+      <div>
+        {genreButtons()}
+      </div>
     </div>
   )
 }
